@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
 class ContactController extends Controller
@@ -80,7 +81,8 @@ class ContactController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $contact = Contact::findOrFail($id);
+        return view('contacts.edit', compact('contact'));
     }
 
     /**
@@ -88,7 +90,45 @@ class ContactController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $contact = Contact::findOrFail($id);
+        
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:150',
+                Rule::unique('contacts', 'email')->ignore($contact->id),
+            ],
+            'phone' => 'required|string|max:20',
+        ], [
+            'name.required'  => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.unique'   => 'The email has already been taken',
+            'phone.required' => 'Phone is required',
+        ]);
+
+        if (empty($request->name) && empty($request->email) && empty($request->phone)) {
+            return back()
+                ->withErrors(['all' => 'Name, Email & Phone are required'])
+                ->withInput();
+        }
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $contact->update([
+            'name'  => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+        ]);
+
+        return redirect()
+            ->route('contacts.index')
+            ->with('success', 'Contact updated successfully');
     }
 
     /**

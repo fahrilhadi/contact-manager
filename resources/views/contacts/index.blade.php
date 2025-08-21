@@ -23,7 +23,7 @@
                     <td class="px-4 py-3 border-b border-gray-200">{{ $contact->email }}</td>
                     <td class="px-4 py-3 border-b border-gray-200">{{ $contact->phone }}</td>
                     <td class="px-4 py-3 border-b border-gray-200 text-center">
-                        <a href="" 
+                        <a href="{{ route('contacts.edit', $contact->id) }}" 
                           class="px-3 py-1 rounded-lg border border-gray-300 hover:border-black text-sm transition shadow mr-2">
                             Edit
                         </a>
