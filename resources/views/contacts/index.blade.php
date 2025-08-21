@@ -43,6 +43,7 @@
             @endforelse
           </tbody>
         </table>
+        <x-pagination :paginator="$contacts" />
       </div>
     </div>
     <div id="deleteModal" class="fixed inset-0 backdrop-blur-sm z-[9999] hidden items-center justify-center">
